@@ -7,6 +7,21 @@
     <version>1.0-SNAPSHOT</version>
     <name>Cat</name>
     <url>http://maven.apache.org</url>
+    <licenses>
+        <name>General Public License 3</name>
+        <url>http://www.gnu.org/copyleft/gpl.html</url>
+    </licenses>
+    <developers>
+        <developer>
+            <id>wolverian</id>
+            <name>Ilmari Vacklin</name>
+            <email>ilmari.vacklin@cs.helsinki.fi</email>
+            <roles>
+                <role>programmer</role>
+            </role>
+        </developer>
+        <!-- Add yourself here! -->
+    </developers>
     <build>
         <resources>
             <resource>

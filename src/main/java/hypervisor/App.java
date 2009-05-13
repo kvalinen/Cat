@@ -1,102 +1,110 @@
 package hypervisor;
+
 import jgame.*;
 import jgame.platform.*;
 
-/** Tutorial example 5: user input.  Illustrates the user's keyboard state,
- * and mouse position and buttons.
+/**
+ * Hello world!
+ *
  */
-public class App extends JGEngine {
+public class App extends StdGame {
+    
+    private static String[] MAP = new String[] {
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+        "----------------------------------------",
+    };
 
-	public static void main(String [] args) {
-		new App(new JGPoint(512,480));
-	}
+    public static void main( String[] args ) {
+        new App(new JGPoint(640, 480));
+    }
 
-	/** Application constructor. */
-	public App(JGPoint size) { initEngine(size.x,size.y); }
+    App(JGPoint size) {
+        initEngine(size.x, size.y);
+    }
 
-	/** Applet constructor. */
-	public App() { initEngineApplet(); }
+    App() {
+        initEngineApplet();
+    }
 
-	/** Note: we have doubled the playfield size here. */
-	public void initCanvas() { setCanvasSettings(40,30,16,16,null,null,null); }
+    public void initCanvas() {
+        setCanvasSettings(40, 30, 64, 64, null, null, null);
+    }
 
-	public void initGame() {
-		setFrameRate(35,2);
-		// load a single sprite
-		// hide the mouse cursor
-		setCursor(null);
-	}
+    public void initGame() {
+        setFrameRate(35, 2);
 
-	/** A simple timer. */
-	int gametimer=0;
-	/** Mouse position of previous frame. */
-	int prevmousex=0,prevmousey=0;
+        /* Tiles */
+        defineImage("grass", "-", 0, "grass.png", "-");
 
-	public void doFrame() {
-		moveObjects(null,0);
-		gametimer++;
-		// release objects when we press the mouse button or the shift key
-		// The mouse button releases a continuous stream of objects, the shift
-		// key only one.
-		if (getMouseButton(1) || getKey(KeyShift)) {
-			// When the shift key is pressed, we only want to release one
-			// object, so the user can release them one at a time.
-			// We can achieve this in a simple manner by clearing the key
-			// state.  It will only be set again if the key is pressed again
-			// (or autorepeat activates).  We can achieve the same thing for
-			// the mouse button with clearMouseButton(1).  If we don't do
-			// this, shift will act like the mouse button does.
-			clearKey(KeyShift);
-			// release a simple object in the direction in which the mouse moves
+        setTiles(0, 0, MAP);
 
-	//		setColor(JGColor.red);
-	//		drawRect(getMouseX(), getMouseY(), 10, 10, true, true); // coordinate
-			new JGObject("obj",true, // name
-				getMouseX(), getMouseY(), // coordinate
-				1, "ball", // cid, sprite
-				(getMouseX()-prevmousex)/3.0,
-				(getMouseY()-prevmousey)/3.0, // object speed
-				70 // expiry timer (expire after 70 frames)
-			);
+        /* NPCs */
+        defineImage("dog", "*", 1, "dog.png", "-");
 
-		}
-		// remove all objects with the Enter key
-		if (getKey(KeyEnter)) {
-			// remove all objects
-			removeObjects(null,0);
-		}
-		// remember old mouse position
-		prevmousex = getMouseX();
-		prevmousey = getMouseY();
-	}
+        new Dog(1, 1);
+        new Dog(200, 100);
+    }
 
-	public void paintFrame() {
-		setColor(JGColor.yellow);
-		// draw a custom mouse cursor: an animated rectangle
-		drawRect(
-			getMouseX(),getMouseY(), // coordinate equals mouse coordinate
-			gametimer%20, gametimer%20, // vary size of rectangle
-			false, // rectangle is not filled
-			true   // center rectangle
-		);
-		// draw a description of the last key pressed
-		if (getLastKey()!=0) {
-			int x = getMouseX();
-			int y = getMouseY();
-			// getLastKey gets the last key pressed.
-			// getKeyDesc translates a keycode to a human-readable String
-			drawString("Coordinates "+x+" "+y+" You pressed: "+getKeyDesc(getLastKey()),
-				pfWidth()/2, 50, 0);
-		} else {
-			drawString("Press a key!", pfWidth()/2, 50, 0);
-		}
-		// draw some instructions
-		drawString("Press the mouse button to launch objects",
-			pfWidth()/2, 110, 0);
-		drawString("Press the shift key to launch one object",
-			pfWidth()/2, 140, 0);
-		drawString("Press the enter key to remove all objects",
-			pfWidth()/2, 170, 0);
-	}
-	
+    /** Called when a new level is started. */
+    public void defineLevel() {
+        // remove any remaining objects
+        removeObjects(null, 0);
+    }
+
+    /** Called when a new life is introduced (that is, at the beginning of the
+     * game and every time the player dies. */
+    public void initNewLife() {
+        // ... initialise player sprite ...
+    }
+
+    /** This is the most important method you have to fill in in StdGame. */
+    public void doFrameInGame() {
+        moveObjects(null, 0);
+
+        if (getMouseButton(1))
+            new JGObject("pathDot", true, getMouseX(), getMouseY(), 0, "dog");
+    }
+
+    public void paintFrameInGame() { }
+
+    /* NPC definitions */
+    public class Dog extends JGObject {
+        Dog(int x, int y) {
+            super("dog", true, x, y, 1, "dog");
+        }
+
+        public void move() {
+            // TODO
+        }
+    }
+
 }

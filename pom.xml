@@ -8,6 +8,12 @@
     <name>Cat</name>
     <url>http://maven.apache.org</url>
     <build>
+        <resources>
+            <resource>
+                <targetPath>hypervisor</targetPath>
+                <directory>${basedir}/src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

@@ -87,9 +87,7 @@ public class App extends JGEngine {
                     dbgPrint("No.");
                 }
             }
-        }  
-
-        if (getKey(KeyShift) && drawingState == DrawingState.DRAWING) {
+        } else if (drawingState == DrawingState.DRAWING) {
             drawingState = DrawingState.STOPPED;
         }
 

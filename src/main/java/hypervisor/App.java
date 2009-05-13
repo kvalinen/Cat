@@ -5,17 +5,17 @@ import jgame.platform.*;
 /** Tutorial example 5: user input.  Illustrates the user's keyboard state,
  * and mouse position and buttons.
  */
-public class Example5 extends JGEngine {
+public class App extends JGEngine {
 
 	public static void main(String [] args) {
-		new Example5(new JGPoint(512,480));
+		new App(new JGPoint(512,480));
 	}
 
 	/** Application constructor. */
-	public Example5(JGPoint size) { initEngine(size.x,size.y); }
+	public App(JGPoint size) { initEngine(size.x,size.y); }
 
 	/** Applet constructor. */
-	public Example5() { initEngineApplet(); }
+	public App() { initEngineApplet(); }
 
 	/** Note: we have doubled the playfield size here. */
 	public void initCanvas() { setCanvasSettings(40,30,16,16,null,null,null); }
@@ -23,13 +23,6 @@ public class Example5 extends JGEngine {
 	public void initGame() {
 		setFrameRate(35,2);
 		// load a single sprite
-		defineImage(
-			"ball", // graphic name
-			"-", 0, // tile name and tile cid (in case we use it as a tile)
-			"ball20-red.gif", // file
-			"-" // graphical operation (may be one or two out of
-			    //"x","y", "l","r","u")
-		);
 		// hide the mouse cursor
 		setCursor(null);
 	}
@@ -55,13 +48,17 @@ public class Example5 extends JGEngine {
 			// this, shift will act like the mouse button does.
 			clearKey(KeyShift);
 			// release a simple object in the direction in which the mouse moves
+
+	//		setColor(JGColor.red);
+	//		drawRect(getMouseX(), getMouseY(), 10, 10, true, true); // coordinate
 			new JGObject("obj",true, // name
-				getMouseX()-10, getMouseY()-10, // coordinate
+				getMouseX(), getMouseY(), // coordinate
 				1, "ball", // cid, sprite
 				(getMouseX()-prevmousex)/3.0,
 				(getMouseY()-prevmousey)/3.0, // object speed
 				70 // expiry timer (expire after 70 frames)
 			);
+
 		}
 		// remove all objects with the Enter key
 		if (getKey(KeyEnter)) {
@@ -101,4 +98,5 @@ public class Example5 extends JGEngine {
 		drawString("Press the enter key to remove all objects",
 			pfWidth()/2, 170, 0);
 	}
+	
 }

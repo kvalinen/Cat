@@ -176,11 +176,11 @@ public class App extends JGEngine {
         }
 
         public double getX() {
-            return x + 32;
+            return x + getBBox().width / 2;
         }
 
         public double getY() {
-            return y + 32;
+            return y + getBBox().height / 2;
         }
     }
 

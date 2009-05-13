@@ -16,6 +16,8 @@ public class App extends JGEngine {
                                                          TILES.y * TILE_SIZE.y);
     private static final JGPoint START     = new JGPoint((int) (0.5 * SIZE.x), (int) (0.9 * SIZE.y));
 
+    private static final double PLAYER_HIGHPASS_FILTER = 5;
+
     private static final int MAX_DOGS = 5;
 
     private static final JGColor PATH_COLOR     = JGColor.blue;
@@ -153,11 +155,23 @@ public class App extends JGEngine {
 
                 xspeed = yspeed = 0;
             } else {
-                double dirX = Math.signum(target.x - getX());
-                double dirY = Math.signum(target.y - getY());
+                double distX = target.x - getX();
+                double distY = target.y - getY();
 
-                xspeed = dirX * pixPerFrame;
-                yspeed = dirY * pixPerFrame;
+                double dirX = Math.signum(distX);
+                double dirY = Math.signum(distY);
+
+                if (Math.abs(distX) > PLAYER_HIGHPASS_FILTER) {
+                    xspeed = dirX * pixPerFrame;
+                } else {
+                    xspeed = 0;
+                }
+
+                if (Math.abs(distY) > PLAYER_HIGHPASS_FILTER) {
+                    yspeed = dirY * pixPerFrame;
+                } else {
+                    yspeed = 0;
+                }
             }
         }
 
@@ -182,7 +196,7 @@ public class App extends JGEngine {
         }
 
         public void move() {
-            if (Math.random() < 0.1)
+            if (Math.random() < 0.01)
                 direction = -direction;
 
             xspeed = pixPerFrame * direction;

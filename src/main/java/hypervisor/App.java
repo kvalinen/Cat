@@ -60,10 +60,18 @@ public class App extends StdGame {
     }
 
     public void initGame() {
-        setFrameRate(35,2);
-        defineImage("grass","-",0,"grass.png","-");
+        setFrameRate(35, 2);
+
+        /* Tiles */
+        defineImage("grass", "-", 0, "grass.png", "-");
 
         setTiles(0, 0, MAP);
+
+        /* NPCs */
+        defineImage("dog", "*", 1, "dog.png", "-");
+
+        new Dog(1, 1);
+        new Dog(200, 100);
     }
 
     /** Called when a new level is started. */
@@ -83,9 +91,17 @@ public class App extends StdGame {
         moveObjects(null, 0);
     }
 
-    public void paintFrameInGame() {
-        // display instructions
-        drawString("Cat game", pfWidth()/2,180,0);
+    public void paintFrameInGame() { }
+
+    /* NPC definitions */
+    public class Dog extends JGObject {
+        Dog(int x, int y) {
+            super("dog", true, x, y, 1, "dog");
+        }
+
+        public void move() {
+            // TODO
+        }
     }
 
 }

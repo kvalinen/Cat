@@ -88,33 +88,23 @@ public class App extends StdGame {
         /* Tiles */
         defineImage("grass", "-", 0, "grass.png", "-");
 
-        setTiles(0, 0, MAP);
+        //setTiles(0, 0, MAP);
 
         /* NPCs */
         defineImage("dog", "*", 1, "dog.png", "-");
 
         /* Player */
         defineImage("player_side", "+", 1, "player_cat_side.png", "-");
-    }
-
-    /** Called when a new level is started. */
-    public void defineLevel() {
-        // remove any remaining objects
-        removeObjects(null, 0);
 
         for (int i = 0; i < MAX_DOGS; i++)
-            new Dog((int) Math.round(Math.random() * SIZE.x), 
-                    (int) Math.round(Math.random() * SIZE.y));
-    }
+            new Dog((int) random(0, SIZE.x), 
+                    (int) random(0, SIZE.y));
 
-    /** Called when a new life is introduced (that is, at the beginning of the
-     * game and every time the player dies. */
-    public void initNewLife() {
         new Player(START.x, START.y);
     }
 
     /** Frame logic */
-    public void doFrameInGame() {
+    public void doFrame() {
         moveObjects(null, 0);
 
         previousMouse = new JGPoint(getMouseX(), getMouseY());
@@ -139,10 +129,10 @@ public class App extends StdGame {
                 target = path.remove();
 
             if (x == target.x && y == target.y) {
+                target = null;
+
                 xspeed = 0;
                 yspeed = 0;
-
-                return;
             } else {
                 double dirX = Math.signum(getMouseX() - target.x);
                 double dirY = Math.signum(getMouseY() - target.y);
@@ -157,12 +147,18 @@ public class App extends StdGame {
 
     /** Enemy dogs. Evil bastards. */
     public class Dog extends JGObject {
+        private int direction = 1;
+        private double pixPerFrame = 1;
+
         Dog(int x, int y) {
             super("dog", true, x, y, 1, "dog");
         }
 
         public void move() {
-            
+            if (Math.random() < 0.1)
+                direction = -direction;
+
+            xspeed = pixPerFrame * direction;
         }
     }
 

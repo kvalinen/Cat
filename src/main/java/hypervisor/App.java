@@ -88,7 +88,7 @@ public class App extends StdGame {
         /* Tiles */
         defineImage("grass", "-", 0, "grass.png", "-");
 
-        //setTiles(0, 0, MAP);
+        setTiles(0, 0, MAP);
 
         /* NPCs */
         defineImage("dog", "*", 1, "dog.png", "-");
@@ -113,12 +113,16 @@ public class App extends StdGame {
             new JGObject("pathDot", true, previousMouse.x-10, previousMouse.y-10, 0, "dog");
             path.add(new JGPoint(previousMouse.x, previousMouse.y));
         }
+
+        System.err.println("Path size: " + path.size());
     }
 
     public class Player extends JGObject {
         private double pixPerFrame = 1; // XXX Depends on FPS
 
         private JGPoint target;
+
+        private double dist = 10;
 
         Player(int x, int y) {
             super("player", false, x, y, 1, "player_side");
@@ -128,14 +132,16 @@ public class App extends StdGame {
             if (target == null && !path.isEmpty())
                 target = path.remove();
 
-            if (x == target.x && y == target.y) {
+            if (target == null && path.isEmpty())
+                return;
+
+            if (Math.abs(x - target.x) <= dist && Math.abs(y - target.y) <= dist) {
                 target = null;
 
-                xspeed = 0;
-                yspeed = 0;
+                xspeed = yspeed = 0;
             } else {
-                double dirX = Math.signum(getMouseX() - target.x);
-                double dirY = Math.signum(getMouseY() - target.y);
+                double dirX = Math.signum(target.x - x);
+                double dirY = Math.signum(target.y - y);
 
                 xspeed = dirX * pixPerFrame;
                 yspeed = dirY * pixPerFrame;

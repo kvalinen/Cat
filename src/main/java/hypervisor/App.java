@@ -8,7 +8,7 @@ import java.util.*;
  * Hello world!
  *
  */
-public class App extends StdGame {
+public class App extends JGEngine {
     
     private static String[] MAP = new String[] {
         "----------------------------------------",
@@ -61,7 +61,10 @@ public class App extends StdGame {
 
     private static final int MAX_DOGS = 5;
 
-    private Deque<JGPoint> path = new LinkedList<JGPoint>();
+    private static final JGColor PATH_COLOR     = JGColor.blue;
+    private static final double  PATH_THICKNESS = 10;
+
+    private LinkedList<JGPoint> path = new LinkedList<JGPoint>();
 
     private JGPoint previousMouse = new JGPoint(getMouseX(), getMouseY());
 
@@ -85,16 +88,19 @@ public class App extends StdGame {
     public void initGame() {
         setFrameRate(35, 2);
 
-        /* Tiles */
-        defineImage("grass", "-", 0, "grass.png", "-");
+        /* Background */
+        defineImage("background", "#", 0, "grass.png", "-");
 
-        setTiles(0, 0, MAP);
+        setBGImage("background");
 
         /* NPCs */
         defineImage("dog", "*", 1, "dog.png", "-");
 
         /* Player */
         defineImage("player_side", "+", 1, "player_cat_side.png", "-");
+
+        /* Path */
+        defineImage("dot", "+", 1, "mouse.png", "-");
 
         for (int i = 0; i < MAX_DOGS; i++)
             new Dog((int) random(0, SIZE.x), 
@@ -104,17 +110,33 @@ public class App extends StdGame {
     }
 
     /** Frame logic */
-    public void doFrame() {
+    public void paintFrame() {
         moveObjects(null, 0);
 
         previousMouse = new JGPoint(getMouseX(), getMouseY());
 
         if (getMouseButton(1)) {
-            new JGObject("pathDot", true, previousMouse.x-10, previousMouse.y-10, 0, "dog");
             path.add(new JGPoint(previousMouse.x, previousMouse.y));
         }
 
+        paintPath();
+
         System.err.println("Path size: " + path.size());
+    }
+
+    private void paintPath() {
+        ListIterator<JGPoint> points = path.listIterator();
+
+        while (points.hasNext()) {
+            JGPoint prev = points.next();
+
+            if (!points.hasNext())
+                break;
+
+            JGPoint next = points.next();
+
+            drawLine(prev.x, prev.y, next.x, next.y, PATH_THICKNESS, PATH_COLOR);
+        }
     }
 
     public class Player extends JGObject {
@@ -154,7 +176,7 @@ public class App extends StdGame {
     /** Enemy dogs. Evil bastards. */
     public class Dog extends JGObject {
         private int direction = 1;
-        private double pixPerFrame = 1;
+        private double pixPerFrame = 0.3;
 
         Dog(int x, int y) {
             super("dog", true, x, y, 1, "dog");

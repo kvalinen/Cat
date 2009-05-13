@@ -53,11 +53,12 @@ public class App extends StdGame {
     };
 
     private static final JGPoint TILES     = new JGPoint(20, 20);
-    private static final JGPoint TILE_SIZE = new JGPoint(64, 64);
+    private static final JGPoint TILE_SIZE = new JGPoint(32, 32);
     private static final JGPoint SIZE      = new JGPoint(TILES.x * TILE_SIZE.x, 
                                                          TILES.y * TILE_SIZE.y);
+    private static final JGPoint START     = new JGPoint(0.5 * SIZE.x, 0.9 * SIZE.y);
 
-    private static final int MAX_DOGS = 20;
+    private static final int MAX_DOGS = 5;
 
     /* Application entry point */
     public static void main( String[] args ) {
@@ -85,7 +86,10 @@ public class App extends StdGame {
         setTiles(0, 0, MAP);
 
         /* NPCs */
-        defineImage("dog", "*", 1, "dog.png", "+");
+        defineImage("dog", "*", 1, "dog.png", "-");
+
+        /* Player */
+        defineImage("player_side", "+", "player_cat_side.png", "-");
     }
 
     /** Called when a new level is started. */
@@ -102,6 +106,7 @@ public class App extends StdGame {
      * game and every time the player dies. */
     public void initNewLife() {
         // ... initialise player sprite ...
+        new Player(START.x, START.y);
     }
 
     /** This is the most important method you have to fill in in StdGame. */
@@ -109,10 +114,18 @@ public class App extends StdGame {
         moveObjects(null, 0);
 
         if (getMouseButton(1))
-            new JGObject("pathDot", true, getMouseX(), getMouseY(), 0, "dog");
+            new JGObject("pathDot", true, getMouseX()-10, getMouseY()-10, 0, "dog");
     }
 
-    public void paintFrameInGame() { }
+    public class Player extends JGObject {
+        Player(int x, int y) {
+            super("player", false, x, y, 1, "player_cat_front");
+        }
+
+        public void move() {
+            // TODO Follow path
+        }
+    }
 
     /* NPC definitions */
     public class Dog extends JGObject {
@@ -121,7 +134,7 @@ public class App extends StdGame {
         }
 
         public void move() {
-            // TODO
+            // TODO Random? movement
         }
     }
 

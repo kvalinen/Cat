@@ -89,6 +89,9 @@ public class App extends StdGame {
     /** This is the most important method you have to fill in in StdGame. */
     public void doFrameInGame() {
         moveObjects(null, 0);
+
+        if (getMouseButton(1))
+            new JGObject("pathDot", true, getMouseX(), getMouseY(), 0, "dog");
     }
 
     public void paintFrameInGame() { }

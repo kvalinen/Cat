@@ -17,7 +17,17 @@
         <dependency>
             <groupId>jgame</groupId>
             <artifactId>jgame</artifactId>
-            <version>3.3</artifactId>
+            <version>3.3</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <id>noesis</id>
+            <name>Noesis Repository</name>
+            <url>http://noesis.lambda.fi:8081/artifactory/libs-releases-local</url>
+        </repository>
+    </repositories>
 </project>

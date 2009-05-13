@@ -2,6 +2,7 @@ package hypervisor;
 
 import jgame.*;
 import jgame.platform.*;
+import java.util.*;
 
 /**
  * Hello world!
@@ -60,6 +61,10 @@ public class App extends StdGame {
 
     private static final int MAX_DOGS = 5;
 
+    private List<JGPoint> path = new LinkedList<JGPoint>();
+
+    private JGPoint previousMouse;
+
     /* Application entry point */
     public static void main( String[] args ) {
         new App(SIZE);
@@ -112,17 +117,28 @@ public class App extends StdGame {
     public void doFrameInGame() {
         moveObjects(null, 0);
 
-        if (getMouseButton(1))
-            new JGObject("pathDot", true, getMouseX()-10, getMouseY()-10, 0, "dog");
+        previousMouse = new JGPoint(getMouseX(), getMouseY());
+
+        if (getMouseButton(1)) {
+            new JGObject("pathDot", true, previousMouse.x-10, previousMouse.y-10, 0, "dog");
+            path.add(new JGObject(x, y));
+        }
     }
 
     public class Player extends JGObject {
+        private double pixPerFrame = 1; // XXX Depends on FPS
+
         Player(int x, int y) {
             super("player", false, x, y, 1, "player_cat_front");
         }
 
         public void move() {
             // TODO Follow path
+            int dirX = Math.signum(getMouseX() - previousMouse.x);
+            int dirY = Math.signum(getMouseY() - previousMouse.y);
+
+            xspeed = dirX * pixPerFrame;
+            yspeed = dirY * pixPerFrame;
         }
     }
 
@@ -135,7 +151,7 @@ public class App extends StdGame {
         }
 
         public void move() {
-            // TODO Random? movement
+            
         }
     }
 

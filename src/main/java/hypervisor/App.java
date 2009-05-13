@@ -21,6 +21,10 @@ public class App extends JGEngine {
     private static final JGColor PATH_COLOR     = JGColor.blue;
     private static final double  PATH_THICKNESS = 10;
 
+    public enum DrawingState { NEW, DRAWING, STOPPED }
+
+    private DrawingState drawingState = DrawingState.NEW;
+
     // Concrete type since we need both .listIterator() and .remove()
     private LinkedList<JGPoint> path = new LinkedList<JGPoint>();
 
@@ -74,24 +78,57 @@ public class App extends JGEngine {
         previousMouse = new JGPoint(getMouseX(), getMouseY());
 
         if (getMouseButton(1)) {
-            path.add(new JGPoint(previousMouse.x, previousMouse.y));
+            if (drawingState == DrawingState.NEW || drawingState == DrawingState.STOPPED) {
+                if (cursorOnPlayer()) {
+                    dbgPrint("Yes.");
+                    drawingState = DrawingState.DRAWING;
+                    path.clear();
+                } else {
+                    dbgPrint("No.");
+                }
+            }
+        }  
+
+        if (getKey(KeyShift) && drawingState == DrawingState.DRAWING) {
+            drawingState = DrawingState.STOPPED;
         }
 
+        if (drawingState == DrawingState.DRAWING)
+            path.add(new JGPoint(previousMouse.x, previousMouse.y));
+
         paintPath();
+    }
+
+    private boolean cursorOnPlayer() {
+        @SuppressWarnings("unchecked")
+        Player player = (Player) getObject("player");
+
+        dbgPrint("Checking if cursor is on player");
+
+        return Math.abs(player.getX() - previousMouse.x) < 30 && Math.abs(player.getY() - previousMouse.y) < 30;
     }
 
     private void paintPath() {
         ListIterator<JGPoint> points = path.listIterator();
 
+        if (!points.hasNext())
+            return;
+
+        @SuppressWarnings("unchecked")
+        Player player = (Player) getObject("player");
+        JGPoint prev = points.next();
+
+        drawLine(player.getX(), player.getY(), prev.x, prev.y, PATH_THICKNESS, PATH_COLOR);
+
         while (points.hasNext()) {
-            JGPoint prev = points.next();
+            JGPoint next = points.next();
+
+            drawLine(prev.x, prev.y, next.x, next.y, PATH_THICKNESS, PATH_COLOR);
 
             if (!points.hasNext())
                 break;
 
-            JGPoint next = points.next();
-
-            drawLine(prev.x, prev.y, next.x, next.y, PATH_THICKNESS, PATH_COLOR);
+            prev = points.next();
         }
     }
 
@@ -113,17 +150,25 @@ public class App extends JGEngine {
             if (target == null && path.isEmpty())
                 return;
 
-            if (Math.abs(x - target.x) <= dist && Math.abs(y - target.y) <= dist) {
+            if (Math.abs(getX() - target.x) <= dist && Math.abs(getY() - target.y) <= dist) {
                 target = null;
 
                 xspeed = yspeed = 0;
             } else {
-                double dirX = Math.signum(target.x - x);
-                double dirY = Math.signum(target.y - y);
+                double dirX = Math.signum(target.x - getX());
+                double dirY = Math.signum(target.y - getY());
 
                 xspeed = dirX * pixPerFrame;
                 yspeed = dirY * pixPerFrame;
             }
+        }
+
+        public double getX() {
+            return x + 32;
+        }
+
+        public double getY() {
+            return y + 32;
         }
     }
 

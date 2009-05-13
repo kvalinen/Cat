@@ -20,6 +20,14 @@
                 <role>programmer</role>
             </roles>
         </developer>
+	<developer>
+		<id>cill</id>
+		<name>Ville Niemi</name>
+		<email>ville.niemi@cs.helsinki.fi</email>
+		<roles>
+			<role>programmer</role>
+		</roles>
+	</developer>
         <!-- Add yourself here! -->
     </developers>
     <build>

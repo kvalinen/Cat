@@ -78,8 +78,6 @@ public class App extends JGEngine {
         }
 
         paintPath();
-
-        System.err.println("Path size: " + path.size());
     }
 
     private void paintPath() {

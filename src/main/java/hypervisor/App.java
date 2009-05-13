@@ -105,11 +105,10 @@ public class App extends StdGame {
     /** Called when a new life is introduced (that is, at the beginning of the
      * game and every time the player dies. */
     public void initNewLife() {
-        // ... initialise player sprite ...
         new Player(START.x, START.y);
     }
 
-    /** This is the most important method you have to fill in in StdGame. */
+    /** Frame logic */
     public void doFrameInGame() {
         moveObjects(null, 0);
 
@@ -128,6 +127,8 @@ public class App extends StdGame {
     }
 
     /* NPC definitions */
+
+    /** Enemy dogs. Evil bastards. */
     public class Dog extends JGObject {
         Dog(int x, int y) {
             super("dog", true, x, y, 1, "dog");

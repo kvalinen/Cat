@@ -66,14 +66,6 @@ public class App extends StdGame {
         setTiles(0, 0, MAP);
     }
 
-    private String repeat(int n, String s) {
-        String result = "";
-        for (int i = 0; i < n; i++)
-            result += s;
-        return result;
-    }
-
-
     /** Called when a new level is started. */
     public void defineLevel() {
         // remove any remaining objects

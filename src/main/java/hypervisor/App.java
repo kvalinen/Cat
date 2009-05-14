@@ -71,6 +71,11 @@ public class App extends JGEngine {
         /* Player */
         defineImage("player_side", "+", 1, "player_cat_side.png", "-");
 
+        /* Target */
+        defineImage("target", ".", 1, "drunk_cat_1.png", "-");
+
+        new JGObject("target", false, playerWinArea.x, playerWinArea.y, 1, "target");
+
         /* Path */
         defineImage("dot", "+", 1, "mouse.png", "-");
 
@@ -125,8 +130,10 @@ public class App extends JGEngine {
 
     private void drawVictoryArea() {
         // TODO
+        /*
         setColor(JGColor.red);
         drawRect(playerWinArea.x, playerWinArea.y, playerWinArea.width, playerWinArea.height, true, false);
+        */
     }
 
     private boolean cursorOnPlayer() {

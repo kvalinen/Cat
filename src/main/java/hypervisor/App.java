@@ -29,7 +29,7 @@ public class App extends JGEngine {
     private static final JGColor PATH_COLOR     = JGColor.blue;
     private static final double  PATH_THICKNESS = 10;
 
-    private boolean static DEBUG = false;
+    private boolean DEBUG = false;
 
     public enum DrawingState { NEW, DRAWING, STOPPED }
 
@@ -76,7 +76,7 @@ public class App extends JGEngine {
 
         for (int i = 0; i < MAX_DOGS; i++)
             new Dog((int) random(0, SIZE.x), 
-                    (int) random(0, SIZE.y - 50));
+                    (int) random(0, SIZE.y - 200));
 
         new Player(playerStartPosition.x, playerStartPosition.y);
     }
@@ -94,21 +94,23 @@ public class App extends JGEngine {
 
         previousMouse = new JGPoint(getMouseX(), getMouseY());
 
-        if (getMouseButton(1)) {
-            if (drawingState == DrawingState.NEW || drawingState == DrawingState.STOPPED) {
-                if (cursorOnPlayer()) {
-                    drawingState = DrawingState.DRAWING;
-                    path.clear();
-                } else if (cursoronRouteEnd())  {
-                    drawingState = DrawingState.DRAWING;
+        if (!player.isRunning()) {
+            if (getMouseButton(1)) {
+                if (drawingState == DrawingState.NEW || drawingState == DrawingState.STOPPED) {
+                    if (cursorOnPlayer()) {
+                        drawingState = DrawingState.DRAWING;
+                        path.clear();
+                    } else if (cursoronRouteEnd())  {
+                        drawingState = DrawingState.DRAWING;
+                    }
                 }
+            } else if (drawingState == DrawingState.DRAWING) {
+                drawingState = DrawingState.STOPPED;
             }
-        } else if (drawingState == DrawingState.DRAWING) {
-            drawingState = DrawingState.STOPPED;
-        }
 
-        if (drawingState == DrawingState.DRAWING)
-            path.add(new JGPoint(previousMouse.x, previousMouse.y));
+            if (drawingState == DrawingState.DRAWING)
+                path.add(new JGPoint(previousMouse.x, previousMouse.y));
+        }
 
         paintPath();
 
@@ -171,9 +173,10 @@ public class App extends JGEngine {
     public class Player extends JGObject {
         private final double pixPerFrame = 2; // XXX Depends on FPS
         private final double dist = 10;
-        private final double scaredDistance = 40;
+        private final double scaredDistance = 80;
 
         private final double runningSpeed = 5;
+        private final double runDistance = 80;
 
         private boolean running = false;
 
@@ -188,8 +191,6 @@ public class App extends JGEngine {
 
             if (running) {
                 debug("Running!");
-                xspeed = runningSpeed;
-                yspeed = runningSpeed;
             } else {
                 debug("Phew, safe.");
             }
@@ -200,7 +201,13 @@ public class App extends JGEngine {
             if (target == null && path.isEmpty())
                 return;
 
+            if (DEBUG) {
+                drawLine(getX(), getY(), target.x, target.y, 2, JGColor.cyan);
+            }
+
             if (Math.abs(getX() - target.x) <= dist && Math.abs(getY() - target.y) <= dist) {
+                running = false;
+
                 target = null;
 
                 xspeed = yspeed = 0;
@@ -223,6 +230,10 @@ public class App extends JGEngine {
                     yspeed = 0;
                 }
             }
+        }
+
+        public boolean isRunning() {
+            return running;
         }
 
         public double getX() {
@@ -267,8 +278,8 @@ public class App extends JGEngine {
 
         private JGPoint pickEscape() {
             // Always run towards center
-            return new JGPoint((int)(x + Math.signum(SIZE.x - getX()) * random(0, 80)), 
-                               (int)(y + Math.signum(SIZE.y - getY()) * random(0, 80)));
+            return new JGPoint((int)(x + Math.signum(SIZE.x/2 - getX()) * random(runDistance/2, runDistance)), 
+                               (int)(y + Math.signum(SIZE.y/2 - getY()) * random(runDistance/2, runDistance)));
         }
 
         private List<Dog> getDogs() {
@@ -296,7 +307,7 @@ public class App extends JGEngine {
         }
     }
 
-    private static void debug(String message) {
+    private void debug(String message) {
         if (DEBUG)
             dbgPrint(message);
     }

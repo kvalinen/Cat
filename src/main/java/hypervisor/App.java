@@ -14,7 +14,11 @@ public class App extends JGEngine {
     private static final JGPoint TILE_SIZE = new JGPoint(32, 32);
     private static final JGPoint SIZE      = new JGPoint(TILES.x * TILE_SIZE.x, 
                                                          TILES.y * TILE_SIZE.y);
-    private static final JGPoint START     = new JGPoint((int) (0.5 * SIZE.x), (int) (0.9 * SIZE.y));
+    private static final JGPoint playerStartPosition     = new JGPoint((int) (0.5 * SIZE.x), (int) (0.9 * SIZE.y));
+
+    private static final JGPoint playerWinAreaSize = new JGPoint(40, 40);
+    private static final JGRectangle playerWinArea = new JGRectangle((SIZE.x - playerWinAreaSize.x) / 2,
+                                                                     (SIZE.y - playerWinAreaSize.y) / 2);
 
     private static final double PLAYER_HIGHPASS_FILTER = 5;
 
@@ -70,7 +74,7 @@ public class App extends JGEngine {
             new Dog((int) random(0, SIZE.x), 
                     (int) random(0, SIZE.y));
 
-        new Player(START.x, START.y);
+        new Player(playerStartPosition.x, playerStartPosition.y);
     }
 
     /** Frame logic */

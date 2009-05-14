@@ -81,6 +81,13 @@ public class App extends JGEngine {
     public void paintFrame() {
         moveObjects(null, 0);
 
+        @SuppressWarnings("unchecked")
+        Player player = (Player) getObject("player");
+
+        if (player.isInside(playerWinArea)) {
+            win();
+        }
+
         previousMouse = new JGPoint(getMouseX(), getMouseY());
 
         if (getMouseButton(1)) {
@@ -101,6 +108,12 @@ public class App extends JGEngine {
             path.add(new JGPoint(previousMouse.x, previousMouse.y));
 
         paintPath();
+    }
+
+    private void win() {
+        // FIXME
+        System.out.println("You won!");
+        System.exit();
     }
 
     private boolean cursorOnPlayer() {
@@ -185,6 +198,10 @@ public class App extends JGEngine {
 
         public double getY() {
             return y + getBBox().height / 2;
+        }
+
+        public boolean isInside(JGRectangle area) {
+            return x >= area.x && y >= area.y && x <= area.x + area.width && y <= area.y + area.height;
         }
     }
 

@@ -122,6 +122,8 @@ public class App extends JGEngine {
 
     private void drawVictoryArea() {
         // TODO
+        setColor(JGColor.red);
+        drawRect(playerWinArea.x, playerWinArea.y, playerWinArea.width, playerWinArea.height, true, false);
     }
 
     private boolean cursorOnPlayer() {

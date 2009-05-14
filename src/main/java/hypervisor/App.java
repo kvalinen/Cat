@@ -34,7 +34,7 @@ public class App extends JGEngine {
     private DrawingState drawingState = DrawingState.NEW;
 
     // Concrete type since we need both .listIterator() and .remove()
-    private LinkedList<JGPoint> path = new LinkedList<JGPoint>();
+    private final LinkedList<JGPoint> path = new LinkedList<JGPoint>();
 
     private JGPoint previousMouse = new JGPoint(getMouseX(), getMouseY());
 
@@ -160,11 +160,10 @@ public class App extends JGEngine {
     }
 
     public class Player extends JGObject {
-        private double pixPerFrame = 1; // XXX Depends on FPS
+        private final double pixPerFrame = 3; // XXX Depends on FPS
+        private final double dist = 10;
 
         private JGPoint target;
-
-        private double dist = 10;
 
         Player(int x, int y) {
             super("player", false, x, y, 1, "player_side");

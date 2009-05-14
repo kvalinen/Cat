@@ -16,18 +16,14 @@ public class App extends JGEngine {
                                                          TILES.y * TILE_SIZE.y);
     private static final JGPoint playerStartPosition     = new JGPoint((int) (0.5 * SIZE.x), (int) (0.9 * SIZE.y));
 
-    private static final JGPoint playerWinAreaSize = new JGPoint(40, 40);
-    private static final JGRectangle playerWinArea = new JGRectangle((SIZE.x - playerWinAreaSize.x) / 2,
-                                                                     playerWinAreaSize.y + 20,
-                                                                     playerWinAreaSize.x,
-                                                                     playerWinAreaSize.y);
-
     private static final double PLAYER_HIGHPASS_FILTER = 5;
 
     private static final int MAX_DOGS = 5;
 
     private static final JGColor PATH_COLOR     = JGColor.blue;
     private static final double  PATH_THICKNESS = 10;
+
+    private static final JGPoint winTarget = new JGPoint(SIZE.x / 2, 0);
 
     private boolean DEBUG = false;
 
@@ -66,36 +62,34 @@ public class App extends JGEngine {
         setBGImage("background");
 
         /* NPCs */
-        defineImage("dog", "*", 1, "dog.png", "-");
+        defineImage("dog", "*", 3, "dog.png", "-");
 
         /* Player */
-        defineImage("player_side", "+", 1, "player_cat_side.png", "-");
+        defineImage("player_side", "+", 2, "player_cat_side.png", "-");
 
         /* Target */
-        defineImage("target", ".", 1, "drunk_cat_1.png", "-");
+        defineImage("target", ".", 1, "kuisti.png", "-");
 
-        new JGObject("target", false, playerWinArea.x, playerWinArea.y, 1, "target");
+        new JGObject("target", false, 0, 0, 3, "target");
 
         /* Path */
         defineImage("dot", "+", 1, "dot.png", "-");
 
         for (int i = 0; i < MAX_DOGS; i++)
             new Dog((int) random(0, SIZE.x), 
-                    (int) random(0, SIZE.y - 200));
+                    (int) random(getImage("target").getSize().y, SIZE.y - 200));
 
         new Player(playerStartPosition.x, playerStartPosition.y);
     }
 
     /** Frame logic */
-    public void paintFrame() {
+    public void doFrame() {
         moveObjects(null, 0);
+
+        checkCollision(1, 2);
 
         @SuppressWarnings("unchecked")
         Player player = (Player) getObject("player");
-
-        if (player.getBBox().intersects(playerWinArea)) {
-            win();
-        }
 
         previousMouse = new JGPoint(getMouseX(), getMouseY());
 
@@ -113,27 +107,19 @@ public class App extends JGEngine {
                 drawingState = DrawingState.STOPPED;
             }
 
-            if (drawingState == DrawingState.DRAWING)
-                path.add(new JGPoint(previousMouse.x, previousMouse.y));
+            if (drawingState == DrawingState.DRAWING) {
+                if (path.isEmpty() 
+                || (!path.isEmpty() && !previousMouse.equals(path.getLast()))) {
+                    path.add(new JGPoint(previousMouse.x, previousMouse.y));
+                }
+            }
         }
-
-        paintPath();
-
-        drawVictoryArea();
     }
 
     private void win() {
         // FIXME
         System.out.println("You won!");
         System.exit(0);
-    }
-
-    private void drawVictoryArea() {
-        // TODO
-        /*
-        setColor(JGColor.red);
-        drawRect(playerWinArea.x, playerWinArea.y, playerWinArea.width, playerWinArea.height, true, false);
-        */
     }
 
     private boolean cursorOnPlayer() {
@@ -152,7 +138,7 @@ public class App extends JGEngine {
 		}
     }
 
-	private void paintPath() {
+	public void paintFrame() {
 		for (JGPoint p : path) {
             drawImage(p.x, p.y, "dot");
 		}
@@ -172,12 +158,10 @@ public class App extends JGEngine {
         private JGPoint target;
 
         Player(int x, int y) {
-            super("player", false, x, y, 1, "player_side");
+            super("player", false, x, y, 2, "player_side");
         }
 
         public void move() {
-            checkDogs();
-
             if (running) {
                 debug("Running!");
             } else {
@@ -233,46 +217,27 @@ public class App extends JGEngine {
             return y + getBBox().height / 2;
         }
 
-        private void checkDogs() {
-            if (running)
-                return;
+        public void hit(JGObject object) {
 
-            debug("Looking for dogs");
+            dbgPrint("Collision with " + object.getName());
 
-            List<Dog> dogs = getDogs();
-
-            for (Dog dog : dogs) {
-                if (distanceTo(dog) < scaredDistance) {
-                    debug("Eeeek, a dog!");
-                    path.clear();
-                    running = true;
-                    target = pickEscape();
-                }
+            if (object.getName().startsWith("dog")) {
+                debug("Eeeek, a dog!");
+                path.clear();
+                running = true;
+                target = pickEscape();
+            } else if (object.getName().startsWith("target")) {
+                win();
+            } else {
+                xspeed = 0;
+                yspeed = 0;
             }
-        }
-
-        private double distanceTo(JGObject object) {
-            JGRectangle target = object.getBBox();
-
-            double targetX = target.x + target.width / 2;
-            double targetY = target.y + target.height / 2;
-
-            if (DEBUG) {
-                drawLine(getX(), getY(), targetX, targetY, 2, JGColor.white);
-            }
-
-            return Math.sqrt(Math.pow(targetX - getX(), 2) 
-                           + Math.pow(targetY - getY(), 2));
         }
 
         private JGPoint pickEscape() {
             // Always run towards center
             return new JGPoint((int)(x + Math.signum(SIZE.x/2 - getX()) * random(runDistance/2, runDistance)), 
                                (int)(y + Math.signum(SIZE.y/2 - getY()) * random(runDistance/2, runDistance)));
-        }
-
-        private List<Dog> getDogs() {
-            return getObjects("dog", 1, false, new JGRectangle(0, 0, SIZE.x, SIZE.y));
         }
 
     }

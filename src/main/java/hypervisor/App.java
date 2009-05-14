@@ -76,7 +76,7 @@ public class App extends JGEngine {
         /* Target */
         defineImage("target", ".", 1, "kuisti.png", "-");
 
-        new JGObject("target", false, 0, 0, 3, "target");
+        new JGObject("target", false, (pfWidth()-getImageSize("target").x)/2, 0, 3, "target");
 
         /* Path */
         defineImage("dot", "+", 1, "dot.png", "-");
@@ -160,17 +160,19 @@ public class App extends JGEngine {
     public class Player extends JGObject {
         private final double pixPerFrame = 2; // XXX Depends on FPS
         private final double dist = 10;
-        private final double scaredDistance = 80;
 
-        private final double runningSpeed = 5;
-        private final double runDistance = 80;
+        private final double runningSpeed = 10;
+        private final double runDistance = 100;
 
         private boolean running = false;
 
         private JGPoint target;
 
         Player() {
-            super("player", false, pfWidth()/2 - getImage("player_side").getSize().x/2, pfHeight()-getImage("player_side").getSize().y*2, 2, "player_side");
+            super("player", false, 
+                    (pfWidth() - getImageSize("player_side").x) / 2,
+                    pfHeight() - getImageSize("player_side").y * 2,
+                    2, "player_side");
         }
 
         public void move() {
@@ -217,8 +219,8 @@ public class App extends JGEngine {
                 }
             }
 
-            if (x + getBBox().width > pfWidth()) { xspeed = 0; x = 0; }
-            if (y + getBBox().height > pfHeight()) { yspeed = 0; y = 0; }
+            if (x + getBBox().width > pfWidth()) { xspeed = 0; x = pfWidth() - getBBox().width; }
+            if (y + getBBox().height > pfHeight()) { yspeed = 0; y = pfHeight() - getBBox().height; }
 
             if (x < 0) { xspeed = 0; x = 0; }
             if (y < 0) { yspeed = 0; y = 0; }
@@ -244,23 +246,20 @@ public class App extends JGEngine {
                 debug("Eeeek, a dog!");
                 path.clear();
                 running = true;
-                target = pickEscape();
+
+                double newX = random(runDistance/2, runDistance) * Math.signum(x - object.x);
+                double newY = random(runDistance/2, runDistance) * Math.signum(y - object.y);
+
+                if (0 == checkCollision(1, newX, newY)) {
+                    target = new JGPoint((int) (x + newX), (int) (y + newY));
+                } else {
+                    target = new JGPoint((int) x, (int) y);
+                }
             } else if (object.getName().startsWith("target")) {
                 win();
             } else {
                 xspeed = 0;
                 yspeed = 0;
-            }
-        }
-
-        private JGPoint pickEscape() {
-            double newX = (-Math.signum(xspeed)) * random(runDistance/2, runDistance);
-            double newY = (-Math.signum(yspeed)) * random(runDistance/2, runDistance);
-
-            if (0 == checkCollision(1, newX, newY)) {
-                return new JGPoint((int) (x + newX), (int) (y + newY));
-            } else {
-                return new JGPoint((int) x, (int) y);
             }
         }
     }

@@ -18,7 +18,9 @@ public class App extends JGEngine {
 
     private static final JGPoint playerWinAreaSize = new JGPoint(40, 40);
     private static final JGRectangle playerWinArea = new JGRectangle((SIZE.x - playerWinAreaSize.x) / 2,
-                                                                     (SIZE.y - playerWinAreaSize.y) / 2);
+                                                                     (SIZE.y - playerWinAreaSize.y) / 2,
+                                                                     playerWinAreaSize.x,
+                                                                     playerWinAreaSize.y);
 
     private static final double PLAYER_HIGHPASS_FILTER = 5;
 
@@ -108,12 +110,18 @@ public class App extends JGEngine {
             path.add(new JGPoint(previousMouse.x, previousMouse.y));
 
         paintPath();
+
+        drawVictoryArea();
     }
 
     private void win() {
         // FIXME
         System.out.println("You won!");
-        System.exit();
+        System.exit(0);
+    }
+
+    private void drawVictoryArea() {
+        // TODO
     }
 
     private boolean cursorOnPlayer() {

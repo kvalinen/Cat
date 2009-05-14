@@ -86,7 +86,7 @@ public class App extends JGEngine {
         @SuppressWarnings("unchecked")
         Player player = (Player) getObject("player");
 
-        if (player.isInside(playerWinArea)) {
+        if (player.getBBox().intersects(playerWinArea)) {
             win();
         }
 
@@ -210,9 +210,6 @@ public class App extends JGEngine {
             return y + getBBox().height / 2;
         }
 
-        public boolean isInside(JGRectangle area) {
-            return x >= area.x && y >= area.y && x + getBBox().width <= area.x + area.width && y + getBBox().height <= area.y + area.height;
-        }
     }
 
     /* NPC definitions */

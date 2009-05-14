@@ -150,36 +150,11 @@ public class App extends JGEngine {
 		} else {
 			return false;
 		}
-
-	}
-/*
-    private void paintPath() {
-        ListIterator<JGPoint> points = path.listIterator();
-
-        if (!points.hasNext())
-            return;
-
-        @SuppressWarnings("unchecked")
-        Player player = (Player) getObject("player");
-        JGPoint prev = points.next();
-
-        drawLine(player.getX(), player.getY(), prev.x, prev.y, PATH_THICKNESS, PATH_COLOR);
-
-        while (points.hasNext()) {
-            JGPoint next = points.next();
-
-            drawLine(prev.x, prev.y, next.x, next.y, PATH_THICKNESS, PATH_COLOR);
-
-            if (!points.hasNext())
-                break;
-
-            prev = points.next();
-        }
-    }*/
+    }
 
 	private void paintPath() {
-		for( JGPoint p : path) {
-			drawRect(p.x, p.y, 5, 5, true, true);
+		for (JGPoint p : path) {
+            drawImage(p.x, p.y, "dot");
 		}
 	}
 		

@@ -10,11 +10,10 @@ import java.util.*;
  */
 public class App extends JGEngine {
     
-    private static final JGPoint TILES     = new JGPoint(20, 20);
+    private static final JGPoint TILES     = new JGPoint(64, 48);
     private static final JGPoint TILE_SIZE = new JGPoint(32, 32);
     private static final JGPoint SIZE      = new JGPoint(TILES.x * TILE_SIZE.x, 
                                                          TILES.y * TILE_SIZE.y);
-    private static final JGPoint playerStartPosition     = new JGPoint((int) (0.5 * SIZE.x), (int) (0.9 * SIZE.y));
 
     private static final double PLAYER_HIGHPASS_FILTER = 5;
 
@@ -38,14 +37,21 @@ public class App extends JGEngine {
 
     /* Application entry point */
     public static void main( String[] args ) {
-        new App(SIZE);
+        new App(640, 480);
+    }
+
+    App(int x, int y) {
+        super();
+        initEngine(x, y);
     }
 
     App(JGPoint size) {
+        super();
         initEngine(size.x, size.y);
     }
 
     App() {
+        super();
         initEngineApplet();
     }
 
@@ -79,7 +85,7 @@ public class App extends JGEngine {
             new Dog((int) random(0, SIZE.x), 
                     (int) random(getImage("target").getSize().y, SIZE.y - 200));
 
-        new Player(playerStartPosition.x, playerStartPosition.y);
+        new Player();
     }
 
     /** Frame logic */
@@ -108,12 +114,18 @@ public class App extends JGEngine {
             }
 
             if (drawingState == DrawingState.DRAWING) {
-                if (path.isEmpty() 
-                || (!path.isEmpty() && !previousMouse.equals(path.getLast()))) {
-                    path.add(new JGPoint(previousMouse.x, previousMouse.y));
+                JGRectangle bbox = getObject("player").getBBox();
+
+                if (path.isEmpty() || (!path.isEmpty() && !previousMouse.equals(path.getLast()))) {
+                    if (previousMouse.x > bbox.width/2 && previousMouse.x < pfWidth() - bbox.width/2
+                     && previousMouse.y > bbox.height/2 && previousMouse.y < pfHeight() - bbox.height/2) {
+                        path.add(new JGPoint(previousMouse.x, previousMouse.y));
+                    }
                 }
             }
         }
+
+        paintFrame();
     }
 
     private void win() {
@@ -157,8 +169,8 @@ public class App extends JGEngine {
 
         private JGPoint target;
 
-        Player(int x, int y) {
-            super("player", false, x, y, 2, "player_side");
+        Player() {
+            super("player", false, pfWidth()/2 - getImage("player_side").getSize().x/2, pfHeight()-getImage("player_side").getSize().y*2, 2, "player_side");
         }
 
         public void move() {
@@ -175,7 +187,8 @@ public class App extends JGEngine {
                 return;
 
             if (DEBUG) {
-                drawLine(getX(), getY(), target.x, target.y, 2, JGColor.cyan);
+                debug("Drawing from (" + getX() + ", " + getY() + ") to (" + target.x + ", " + target.y + ")");
+                drawLine(getX(), getY(), target.x, target.y, 2.0, JGColor.cyan);
             }
 
             if (Math.abs(getX() - target.x) <= dist && Math.abs(getY() - target.y) <= dist) {
@@ -203,6 +216,12 @@ public class App extends JGEngine {
                     yspeed = 0;
                 }
             }
+
+            if (x + getBBox().width > pfWidth()) { xspeed = 0; x = 0; }
+            if (y + getBBox().height > pfHeight()) { yspeed = 0; y = 0; }
+
+            if (x < 0) { xspeed = 0; x = 0; }
+            if (y < 0) { yspeed = 0; y = 0; }
         }
 
         public boolean isRunning() {
@@ -235,11 +254,15 @@ public class App extends JGEngine {
         }
 
         private JGPoint pickEscape() {
-            // Always run towards center
-            return new JGPoint((int)(x + Math.signum(SIZE.x/2 - getX()) * random(runDistance/2, runDistance)), 
-                               (int)(y + Math.signum(SIZE.y/2 - getY()) * random(runDistance/2, runDistance)));
-        }
+            double newX = (-Math.signum(xspeed)) * random(runDistance/2, runDistance);
+            double newY = (-Math.signum(yspeed)) * random(runDistance/2, runDistance);
 
+            if (0 == checkCollision(1, newX, newY)) {
+                return new JGPoint((int) (x + newX), (int) (y + newY));
+            } else {
+                return new JGPoint((int) x, (int) y);
+            }
+        }
     }
 
     /* NPC definitions */

@@ -29,6 +29,8 @@ public class App extends JGEngine {
     private static final JGColor PATH_COLOR     = JGColor.blue;
     private static final double  PATH_THICKNESS = 10;
 
+    private boolean static DEBUG = false;
+
     public enum DrawingState { NEW, DRAWING, STOPPED }
 
     private DrawingState drawingState = DrawingState.NEW;
@@ -238,6 +240,11 @@ public class App extends JGEngine {
 
             xspeed = pixPerFrame * direction;
         }
+    }
+
+    private static void debug(String message) {
+        if (DEBUG)
+            dbgPrint(message);
     }
 
 }

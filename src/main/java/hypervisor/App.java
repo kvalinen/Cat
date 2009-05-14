@@ -58,7 +58,7 @@ public class App extends JGEngine {
     }
 
     public void initGame() {
-        setFrameRate(35, 2);
+        setFrameRate(60, 2);
 
         /* Background */
         defineImage("background", "#", 0, "grass.png", "-");
@@ -77,7 +77,7 @@ public class App extends JGEngine {
         new JGObject("target", false, playerWinArea.x, playerWinArea.y, 1, "target");
 
         /* Path */
-        defineImage("dot", "+", 1, "mouse.png", "-");
+        defineImage("dot", "+", 1, "dot.png", "-");
 
         for (int i = 0; i < MAX_DOGS; i++)
             new Dog((int) random(0, SIZE.x), 
@@ -152,7 +152,7 @@ public class App extends JGEngine {
 		}
 
 	}
-
+/*
     private void paintPath() {
         ListIterator<JGPoint> points = path.listIterator();
 
@@ -175,7 +175,14 @@ public class App extends JGEngine {
 
             prev = points.next();
         }
-    }
+    }*/
+
+	private void paintPath() {
+		for( JGPoint p : path) {
+			drawRect(p.x, p.y, 5, 5, true, true);
+		}
+	}
+		
 
     public class Player extends JGObject {
         private final double pixPerFrame = 2; // XXX Depends on FPS

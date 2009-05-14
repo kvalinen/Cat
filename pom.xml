@@ -20,25 +20,24 @@
                 <role>programmer</role>
             </roles>
         </developer>
-	<developer>
-		<id>cill</id>
-		<name>Ville Niemi</name>
-		<email>ville.niemi@cs.helsinki.fi</email>
-		<roles>
-			<role>programmer</role>
-		</roles>
-	</developer>
-	<developer>
-		<id>kyllonen</id>
-		<name>Matti Ruoho</name>
-		<email>matti.ruoho@helsinki.fi</email>
-		<roles>
-			<role>designer</>
-		</roles>
-	</developer>
-	
-        <!-- Add yourself here! -->
+        <developer>
+            <id>cill</id>
+            <name>Ville Niemi</name>
+            <email>ville.niemi@cs.helsinki.fi</email>
+            <roles>
+                <role>programmer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>kyllonen</id>
+            <name>Matti Ruoho</name>
+            <email>matti.ruoho@helsinki.fi</email>
+            <roles>
+                <role>designer</role>
+            </roles>
+        </developer>
 
+        <!-- Add yourself here! -->
     </developers>
     <build>
         <resources>

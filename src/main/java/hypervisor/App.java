@@ -18,7 +18,7 @@ public class App extends JGEngine {
 
     private static final JGPoint playerWinAreaSize = new JGPoint(40, 40);
     private static final JGRectangle playerWinArea = new JGRectangle((SIZE.x - playerWinAreaSize.x) / 2,
-                                                                     (SIZE.y - playerWinAreaSize.y) / 2,
+                                                                     playerWinAreaSize.y + 20,
                                                                      playerWinAreaSize.x,
                                                                      playerWinAreaSize.y);
 
@@ -209,7 +209,7 @@ public class App extends JGEngine {
         }
 
         public boolean isInside(JGRectangle area) {
-            return x >= area.x && y >= area.y && x <= area.x + area.width && y <= area.y + area.height;
+            return x >= area.x && y >= area.y && x + getBBox().width <= area.x + area.width && y + getBBox().height <= area.y + area.height;
         }
     }
 

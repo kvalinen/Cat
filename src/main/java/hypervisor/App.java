@@ -10,11 +10,10 @@ import java.util.*;
  */
 public class App extends JGEngine {
     
-    private static final JGPoint TILES     = new JGPoint(20, 20);
+    private static final JGPoint TILES     = new JGPoint(64, 48);
     private static final JGPoint TILE_SIZE = new JGPoint(32, 32);
     private static final JGPoint SIZE      = new JGPoint(TILES.x * TILE_SIZE.x, 
                                                          TILES.y * TILE_SIZE.y);
-    private static final JGPoint playerStartPosition     = new JGPoint((int) (0.5 * SIZE.x), (int) (0.9 * SIZE.y));
 
     private static final double PLAYER_HIGHPASS_FILTER = 5;
 
@@ -38,14 +37,21 @@ public class App extends JGEngine {
 
     /* Application entry point */
     public static void main( String[] args ) {
-        new App(SIZE);
+        new App(640, 480);
+    }
+
+    App(int x, int y) {
+        super();
+        initEngine(x, y);
     }
 
     App(JGPoint size) {
+        super();
         initEngine(size.x, size.y);
     }
 
     App() {
+        super();
         initEngineApplet();
     }
 
@@ -70,7 +76,7 @@ public class App extends JGEngine {
         /* Target */
         defineImage("target", ".", 1, "kuisti.png", "-");
 
-        new JGObject("target", false, 0, 0, 3, "target");
+        new JGObject("target", false, (pfWidth()-getImageSize("target").x)/2, 0, 3, "target");
 
         /* Path */
         defineImage("dot", "+", 1, "dot.png", "-");
@@ -79,7 +85,7 @@ public class App extends JGEngine {
             new Dog((int) random(0, SIZE.x), 
                     (int) random(getImage("target").getSize().y, SIZE.y - 200));
 
-        new Player(playerStartPosition.x, playerStartPosition.y);
+        new Player();
     }
 
     /** Frame logic */
@@ -108,12 +114,18 @@ public class App extends JGEngine {
             }
 
             if (drawingState == DrawingState.DRAWING) {
-                if (path.isEmpty() 
-                || (!path.isEmpty() && !previousMouse.equals(path.getLast()))) {
-                    path.add(new JGPoint(previousMouse.x, previousMouse.y));
+                JGRectangle bbox = getObject("player").getBBox();
+
+                if (path.isEmpty() || (!path.isEmpty() && !previousMouse.equals(path.getLast()))) {
+                    if (previousMouse.x > bbox.width/2 && previousMouse.x < pfWidth() - bbox.width/2
+                     && previousMouse.y > bbox.height/2 && previousMouse.y < pfHeight() - bbox.height/2) {
+                        path.add(new JGPoint(previousMouse.x, previousMouse.y));
+                    }
                 }
             }
         }
+
+        paintFrame();
     }
 
     private void win() {
@@ -148,17 +160,19 @@ public class App extends JGEngine {
     public class Player extends JGObject {
         private final double pixPerFrame = 2; // XXX Depends on FPS
         private final double dist = 10;
-        private final double scaredDistance = 80;
 
-        private final double runningSpeed = 5;
-        private final double runDistance = 80;
+        private final double runningSpeed = 10;
+        private final double runDistance = 100;
 
         private boolean running = false;
 
         private JGPoint target;
 
-        Player(int x, int y) {
-            super("player", false, x, y, 2, "player_side");
+        Player() {
+            super("player", false, 
+                    (pfWidth() - getImageSize("player_side").x) / 2,
+                    pfHeight() - getImageSize("player_side").y * 2,
+                    2, "player_side");
         }
 
         public void move() {
@@ -175,7 +189,8 @@ public class App extends JGEngine {
                 return;
 
             if (DEBUG) {
-                drawLine(getX(), getY(), target.x, target.y, 2, JGColor.cyan);
+                debug("Drawing from (" + getX() + ", " + getY() + ") to (" + target.x + ", " + target.y + ")");
+                drawLine(getX(), getY(), target.x, target.y, 2.0, JGColor.cyan);
             }
 
             if (Math.abs(getX() - target.x) <= dist && Math.abs(getY() - target.y) <= dist) {
@@ -203,6 +218,12 @@ public class App extends JGEngine {
                     yspeed = 0;
                 }
             }
+
+            if (x + getBBox().width > pfWidth()) { xspeed = 0; x = pfWidth() - getBBox().width; }
+            if (y + getBBox().height > pfHeight()) { yspeed = 0; y = pfHeight() - getBBox().height; }
+
+            if (x < 0) { xspeed = 0; x = 0; }
+            if (y < 0) { yspeed = 0; y = 0; }
         }
 
         public boolean isRunning() {
@@ -225,7 +246,15 @@ public class App extends JGEngine {
                 debug("Eeeek, a dog!");
                 path.clear();
                 running = true;
-                target = pickEscape();
+
+                double newX = random(runDistance/2, runDistance) * Math.signum(x - object.x);
+                double newY = random(runDistance/2, runDistance) * Math.signum(y - object.y);
+
+                if (0 == checkCollision(1, newX, newY)) {
+                    target = new JGPoint((int) (x + newX), (int) (y + newY));
+                } else {
+                    target = new JGPoint((int) x, (int) y);
+                }
             } else if (object.getName().startsWith("target")) {
                 win();
             } else {
@@ -233,13 +262,6 @@ public class App extends JGEngine {
                 yspeed = 0;
             }
         }
-
-        private JGPoint pickEscape() {
-            // Always run towards center
-            return new JGPoint((int)(x + Math.signum(SIZE.x/2 - getX()) * random(runDistance/2, runDistance)), 
-                               (int)(y + Math.signum(SIZE.y/2 - getY()) * random(runDistance/2, runDistance)));
-        }
-
     }
 
     /* NPC definitions */

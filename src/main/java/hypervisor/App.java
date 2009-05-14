@@ -209,6 +209,9 @@ public class App extends JGEngine {
             return y + getBBox().height / 2;
         }
 
+        private List<Dog> getDogs() {
+        }
+
     }
 
     /* NPC definitions */

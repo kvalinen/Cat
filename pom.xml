@@ -28,7 +28,17 @@
 			<role>programmer</role>
 		</roles>
 	</developer>
+	<developer>
+		<id>kyllonen</id>
+		<name>Matti Ruoho</name>
+		<email>matti.ruoho@helsinki.fi</email>
+		<roles>
+			<role>designer</>
+		</roles>
+	</developer>
+	
         <!-- Add yourself here! -->
+
     </developers>
     <build>
         <resources>

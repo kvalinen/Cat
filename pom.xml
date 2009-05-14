@@ -37,6 +37,15 @@
             </roles>
         </developer>
 
+        <developer>
+            <id>Blankko</id>
+            <name>Kukka-Maaria Välinen</name>
+            <email>kukka-maaria.valinen@helsinki.fi</email>
+            <roles>
+                <role>art designer</role>
+            </roles>
+        </developer>
+
         <!-- Add yourself here! -->
     </developers>
     <build>

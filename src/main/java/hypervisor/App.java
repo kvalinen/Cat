@@ -76,7 +76,7 @@ public class App extends JGEngine {
 
         for (int i = 0; i < MAX_DOGS; i++)
             new Dog((int) random(0, SIZE.x), 
-                    (int) random(0, SIZE.y));
+                    (int) random(0, SIZE.y - 50));
 
         new Player(playerStartPosition.x, playerStartPosition.y);
     }
@@ -169,8 +169,13 @@ public class App extends JGEngine {
     }
 
     public class Player extends JGObject {
-        private final double pixPerFrame = 3; // XXX Depends on FPS
+        private final double pixPerFrame = 2; // XXX Depends on FPS
         private final double dist = 10;
+        private final double scaredDistance = 40;
+
+        private final double runningSpeed = 5;
+
+        private boolean running = false;
 
         private JGPoint target;
 
@@ -179,6 +184,16 @@ public class App extends JGEngine {
         }
 
         public void move() {
+            checkDogs();
+
+            if (running) {
+                debug("Running!");
+                xspeed = runningSpeed;
+                yspeed = runningSpeed;
+            } else {
+                debug("Phew, safe.");
+            }
+
             if (target == null && !path.isEmpty())
                 target = path.remove();
 
@@ -218,7 +233,46 @@ public class App extends JGEngine {
             return y + getBBox().height / 2;
         }
 
+        private void checkDogs() {
+            if (running)
+                return;
+
+            debug("Looking for dogs");
+
+            List<Dog> dogs = getDogs();
+
+            for (Dog dog : dogs) {
+                if (distanceTo(dog) < scaredDistance) {
+                    debug("Eeeek, a dog!");
+                    path.clear();
+                    running = true;
+                    target = pickEscape();
+                }
+            }
+        }
+
+        private double distanceTo(JGObject object) {
+            JGRectangle target = object.getBBox();
+
+            double targetX = target.x + target.width / 2;
+            double targetY = target.y + target.height / 2;
+
+            if (DEBUG) {
+                drawLine(getX(), getY(), targetX, targetY, 2, JGColor.white);
+            }
+
+            return Math.sqrt(Math.pow(targetX - getX(), 2) 
+                           + Math.pow(targetY - getY(), 2));
+        }
+
+        private JGPoint pickEscape() {
+            // Always run towards center
+            return new JGPoint((int)(x + Math.signum(SIZE.x - getX()) * random(0, 80)), 
+                               (int)(y + Math.signum(SIZE.y - getY()) * random(0, 80)));
+        }
+
         private List<Dog> getDogs() {
+            return getObjects("dog", 1, false, new JGRectangle(0, 0, SIZE.x, SIZE.y));
         }
 
     }

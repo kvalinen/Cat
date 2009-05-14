@@ -81,12 +81,11 @@ public class App extends JGEngine {
 
         if (getMouseButton(1)) {
             if (drawingState == DrawingState.NEW || drawingState == DrawingState.STOPPED) {
-                if (cursorOnPlayer() || cursoronRouteEnd()) {
-                    dbgPrint("Yes.");
+                if (cursorOnPlayer()) {
                     drawingState = DrawingState.DRAWING;
                     path.clear();
-                } else {
-                    dbgPrint("No.");
+                } else if (cursoronRouteEnd())  {
+                    drawingState = DrawingState.DRAWING;
                 }
             }
         } else if (drawingState == DrawingState.DRAWING) {
@@ -103,20 +102,17 @@ public class App extends JGEngine {
         @SuppressWarnings("unchecked")
         Player player = (Player) getObject("player");
 
-        dbgPrint("Checking if cursor is on player");
-
         return Math.abs(player.getX() - previousMouse.x) < 30 && Math.abs(player.getY() - previousMouse.y) < 30;
     }
 	private boolean cursoronRouteEnd() {
-		ListIterator<JGPoint> points = path.listIterator();
-		if ( points.hasNext() ) {
-			@SuppressWarnings("unchecked")
+		if (!path.isEmpty()) {
 			JGPoint p = path.getLast();
-			dbgPrint("Checking if cursor is on route end");
+
 			return Math.abs(p.x - previousMouse.x ) < 30 && Math.abs(p.y - previousMouse.y) < 30;
 		} else {
 			return false;
 		}
+
 	}
 
     private void paintPath() {
